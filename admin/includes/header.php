@@ -121,8 +121,8 @@ $site_favicon = $stmt->fetchColumn() ?: '';
                 <i class="fas fa-bell w-6 text-cyan-400"></i> Notifications
             </a>
             <div class="pt-4 mt-4 border-t border-white/5">
-                <a href="<?php echo BASE_URL; ?>/index" class="flex items-center px-4 py-3 text-[13px] font-semibold text-cyan-400 rounded-xl hover:bg-white/5 transition-all">
-                    <i class="fas fa-external-link-alt w-6"></i> User Panel
+                <a href="<?php echo BASE_URL; ?>/" class="flex items-center px-4 py-3 text-[13px] font-semibold text-cyan-400 rounded-xl hover:bg-white/5 transition-all">
+                    <i class="fas fa-home w-6"></i> Home (User Panel)
                 </a>
             </div>
         </nav>
@@ -133,7 +133,10 @@ $site_favicon = $stmt->fetchColumn() ?: '';
             <div class="flex items-center md:hidden">
                 <h1 class="text-xl font-black text-cyan-400 uppercase tracking-tight">Admin</h1>
             </div>
-            <div class="flex items-center space-x-4 ml-auto">
+            <div class="flex items-center space-x-6 ml-auto">
+                <a href="<?php echo BASE_URL; ?>/" class="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-cyan-400 transition-colors hidden md:flex items-center">
+                    <i class="fas fa-external-link-alt mr-2"></i> View Site
+                </a>
                 <a href="<?php echo BASE_URL; ?>/logout" class="text-slate-400 hover:text-red-400 transition-colors">
                     <i class="fas fa-power-off"></i>
                 </a>
