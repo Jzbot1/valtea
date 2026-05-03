@@ -65,23 +65,28 @@ class Database {
                 $error = "Failed to write config file. Check permissions on config/database.php";
             } else {
                 // Import tables one by one for better compatibility
-                $sql = file_get_contents('init.sql');
-                if ($sql) {
-                    $statements = array_filter(array_map('trim', explode(';', $sql)));
-                    foreach ($statements as $stmt_sql) {
-                        try {
-                            $pdo->exec($stmt_sql);
-                        } catch (PDOException $e) {
-                            // If it's a "Table already exists" error (1050), we can ignore it
-                            if ($e->getCode() !== '42S01') {
-                                throw $e;
+                $sql_file = __DIR__ . '/init.sql';
+                if (!file_exists($sql_file)) {
+                    $error = "init.sql file not found at $sql_file. Please make sure you have uploaded it to your server.";
+                } else {
+                    $sql = file_get_contents($sql_file);
+                    if ($sql) {
+                        $statements = array_filter(array_map('trim', explode(';', $sql)));
+                        foreach ($statements as $stmt_sql) {
+                            try {
+                                $pdo->exec($stmt_sql);
+                            } catch (PDOException $e) {
+                                // If it's a "Table already exists" error (1050), we can ignore it
+                                if ($e->getCode() !== '42S01') {
+                                    throw $e;
+                                }
                             }
                         }
+                        header("Location: install?step=2");
+                        exit;
+                    } else {
+                        $error = "init.sql file is empty or could not be read.";
                     }
-                    header("Location: install?step=2");
-                    exit;
-                } else {
-                    $error = "init.sql file not found.";
                 }
             }
         } catch (PDOException $e) {
