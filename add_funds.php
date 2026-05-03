@@ -10,8 +10,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($amount >= 1) {
         if ($method === 'jzstore') {
-            // Redirect to payment gateway
-            header("Location: " . BASE_URL . "/includes/JzstoreGateway.php?amount=" . $amount);
+            // Redirect to processing script
+            header("Location: " . BASE_URL . "/process_payment.php?amount=" . $amount);
             exit;
         }
     } else {

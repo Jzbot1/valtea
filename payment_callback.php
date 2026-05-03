@@ -40,19 +40,18 @@ if ($active_gateway === 'jzstore') {
     $gw_settings = JzstoreGateway::getSettings($db);
     $check = JzstoreGateway::checkOrderStatus($gw_settings, $clientTxnId);
     
-    $rawJzStatus = strtolower((string)($check['data']['status'] ?? $check['data']['data']['status'] ?? ''));
-    $status = in_array($rawJzStatus, ['success', 'completed', '1', 'true']) ? 'success' : 'failed';
-    // If the API boolean 'status' is true but there's a specific order status inside 'data'
-    if ($status === 'failed' && isset($check['data']['status']) && $check['data']['status'] === true) {
-        $innerStatus = strtolower((string)($check['data']['data']['status'] ?? ''));
-        $status = in_array($innerStatus, ['success', 'completed']) ? 'success' : 'failed';
-    }
-    // Also accept it if the top level status is exactly boolean true and no inner status exists
-    if ($status === 'failed' && isset($check['data']['status']) && $check['data']['status'] === true && !isset($check['data']['data']['status'])) {
-         $status = 'success';
+    // JZStore structure: {"status": true, "result": {"status": "SUCCESS/COMPLETED", ...}}
+    $apiStatus = $check['data']['status'] ?? false;
+    $orderResult = $check['data']['result'] ?? [];
+    $orderStatus = strtolower((string)($orderResult['status'] ?? ''));
+    
+    if ($apiStatus === true && in_array($orderStatus, ['success', 'completed', 'success_scan', 'scan_pay'])) {
+        $status = 'success';
+    } else {
+        $status = 'failed';
     }
     
-    $utr = (string)($check['data']['data']['utr'] ?? $check['data']['utr'] ?? '');
+    $utr = (string)($orderResult['utr'] ?? '');
 } else {
     $gw_settings = EkupiGateway::getSettings($db);
     $check = EkupiGateway::checkOrderStatus($gw_settings, $clientTxnId);

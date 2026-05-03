@@ -303,28 +303,16 @@ $site_url = $protocol . '://' . $host . $base_path;
 <?php require_once 'includes/footer.php'; ?>
 
 <script>
-function setChatId(id) {
-    document.getElementsByName('telegram_chat_id')[0].value = id;
-    window.scrollTo({ top: document.getElementsByName('telegram_chat_id')[0].offsetTop - 100, behavior: 'smooth' });
-}
-</script>
-    </form>
-</div>
-
-<?php require_once 'includes/footer.php'; ?>
-
-<script>
     function setChatId(id) {
         const input = document.getElementsByName('telegram_chat_id')[0];
         if (input) {
             input.value = id;
             input.focus();
-            input.classList.add('ring-4', 'ring-indigo-500/30', 'border-indigo-500');
+            input.classList.add('ring-4', 'ring-cyan-500/30', 'border-cyan-500');
             setTimeout(() => {
-                input.classList.remove('ring-4', 'ring-indigo-500/30', 'border-indigo-500');
+                input.classList.remove('ring-4', 'ring-cyan-500/30', 'border-cyan-500');
             }, 2000);
             
-            // Optional: Smooth scroll to the input
             input.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
     }
