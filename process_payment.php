@@ -1,10 +1,17 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 require_once __DIR__ . '/config/database.php';
 require_once __DIR__ . '/includes/Auth.php';
 require_once __DIR__ . '/includes/JzstoreGateway.php';
 
 Auth::checkLogin();
 $db = Database::getInstance();
+
+// Ensure schema exists
+require_once __DIR__ . '/includes/EkupiGateway.php';
+EkupiGateway::ensureSchema($db);
 
 // Fetch current user data
 $stmt = $db->prepare("SELECT * FROM users WHERE id = ?");
