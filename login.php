@@ -1,7 +1,15 @@
 <?php
 // login.php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 require_once 'config/database.php';
 require_once 'includes/Auth.php';
+
+// Check if constants are defined
+if (!defined('BASE_URL')) {
+    die("Error: BASE_URL is not defined. Please ensure config/config.php is present and included in config/database.php.");
+}
 
 Auth::startSession();
 if (isset($_SESSION['user_id'])) {
