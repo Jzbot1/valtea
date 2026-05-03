@@ -29,72 +29,90 @@ if (isset($balance_res->error)) {
 }
 ?>
 
-<div class="flex justify-between items-center mb-6">
-    <h2 class="text-2xl font-bold text-white">Dashboard Overview</h2>
-    <div class="glass px-4 py-2 rounded-xl flex items-center border border-indigo-500/30">
-        <div class="mr-3">
-            <p class="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Provider Balance</p>
-            <p class="text-lg font-bold text-indigo-400"><?php echo $provider_currency . ' ' . number_format((float)$provider_balance, 2); ?></p>
+<div class="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div class="text-center md:text-left">
+        <h2 class="text-2xl font-black text-white tracking-tight">Admin Dashboard</h2>
+        <p class="text-slate-400 text-sm mt-1">Manage your SMM empire at a glance</p>
+    </div>
+    <div class="glass px-5 py-3 rounded-2xl flex items-center border border-white/10">
+        <div class="mr-4 text-right">
+            <p class="text-[9px] text-slate-500 uppercase font-black tracking-widest">Provider Balance</p>
+            <p class="text-lg font-black text-cyan-400"><?php echo $provider_currency . ' ' . number_format((float)$provider_balance, 2); ?></p>
         </div>
-        <div class="w-10 h-10 rounded-full bg-indigo-500/10 flex items-center justify-center text-indigo-400">
+        <div class="w-10 h-10 rounded-xl bg-cyan-400/10 flex items-center justify-center text-cyan-400 border border-cyan-400/20">
             <i class="fas fa-wallet"></i>
         </div>
     </div>
 </div>
 
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-    <div class="glass p-6 rounded-2xl shadow-lg border-t-4 border-indigo-500">
-        <h3 class="text-slate-400 text-sm font-medium mb-2">Total Users</h3>
-        <p class="text-3xl font-bold text-white"><?php echo number_format($stats['users']); ?></p>
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
+    <div class="glass-card p-5 relative overflow-hidden group">
+        <div class="absolute -top-10 -right-10 w-24 h-24 bg-cyan-400/5 rounded-full blur-2xl group-hover:bg-cyan-400/10 transition-colors"></div>
+        <h3 class="text-slate-500 text-[10px] font-black uppercase tracking-widest mb-1">Users</h3>
+        <p class="text-2xl font-black text-white"><?php echo number_format($stats['users']); ?></p>
+        <div class="mt-4 flex items-center text-green-400 text-[10px] font-bold">
+            <i class="fas fa-arrow-up mr-1"></i> Active
+        </div>
     </div>
-    <div class="glass p-6 rounded-2xl shadow-lg border-t-4 border-blue-500">
-        <h3 class="text-slate-400 text-sm font-medium mb-2">Total Orders</h3>
-        <p class="text-3xl font-bold text-white"><?php echo number_format($stats['orders']); ?></p>
+    <div class="glass-card p-5 relative overflow-hidden group">
+        <div class="absolute -top-10 -right-10 w-24 h-24 bg-blue-400/5 rounded-full blur-2xl group-hover:bg-blue-400/10 transition-colors"></div>
+        <h3 class="text-slate-500 text-[10px] font-black uppercase tracking-widest mb-1">Orders</h3>
+        <p class="text-2xl font-black text-white"><?php echo number_format($stats['orders']); ?></p>
+        <div class="mt-4 flex items-center text-blue-400 text-[10px] font-bold">
+            <i class="fas fa-shopping-basket mr-1"></i> History
+        </div>
     </div>
-    <div class="glass p-6 rounded-2xl shadow-lg border-t-4 border-green-500">
-        <h3 class="text-slate-400 text-sm font-medium mb-2">Revenue (Added Funds)</h3>
-        <p class="text-3xl font-bold text-white">₹<?php echo number_format($stats['revenue'], 2); ?></p>
+    <div class="glass-card p-5 relative overflow-hidden group">
+        <div class="absolute -top-10 -right-10 w-24 h-24 bg-green-400/5 rounded-full blur-2xl group-hover:bg-green-400/10 transition-colors"></div>
+        <h3 class="text-slate-500 text-[10px] font-black uppercase tracking-widest mb-1">Revenue</h3>
+        <p class="text-2xl font-black text-white">₹<?php echo number_format($stats['revenue'], 2); ?></p>
+        <div class="mt-4 flex items-center text-green-400 text-[10px] font-bold">
+            <i class="fas fa-chart-line mr-1"></i> Total
+        </div>
     </div>
-    <div class="glass p-6 rounded-2xl shadow-lg border-t-4 border-yellow-500">
-        <h3 class="text-slate-400 text-sm font-medium mb-2">Est. Net Profit</h3>
-        <p class="text-3xl font-bold text-white">₹<?php echo number_format($stats['profit'], 2); ?></p>
+    <div class="glass-card p-5 relative overflow-hidden group">
+        <div class="absolute -top-10 -right-10 w-24 h-24 bg-amber-400/5 rounded-full blur-2xl group-hover:bg-amber-400/10 transition-colors"></div>
+        <h3 class="text-slate-500 text-[10px] font-black uppercase tracking-widest mb-1">Net Profit</h3>
+        <p class="text-2xl font-black text-white">₹<?php echo number_format($stats['profit'], 2); ?></p>
+        <div class="mt-4 flex items-center text-amber-400 text-[10px] font-bold">
+            <i class="fas fa-coins mr-1"></i> Estimated
+        </div>
     </div>
 </div>
 
-<!-- Cron Status Section -->
-<div class="glass border border-slate-700/50 rounded-3xl p-8 shadow-2xl mb-8 overflow-hidden relative">
-    <!-- Decorative Pulse -->
-    <div class="absolute top-8 right-8 flex items-center space-x-2">
-        <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest">System Health</span>
+<!-- System Health Section -->
+<div class="glass-card p-6 md:p-8 mb-8 relative overflow-hidden">
+    <div class="absolute top-6 right-6 flex items-center space-x-2">
+        <span class="text-[9px] font-black text-slate-500 uppercase tracking-widest">Cron Status</span>
         <?php
         $last_run = $db->query("SELECT setting_value FROM settings WHERE setting_key = 'last_cron_status_run'")->fetchColumn();
-        $is_active = $last_run && (time() - strtotime($last_run) < 600); // Active if run in last 10 mins
+        $is_active = $last_run && (time() - strtotime($last_run) < 600);
         ?>
-        <div class="w-3 h-3 rounded-full <?php echo $is_active ? 'bg-green-500 shadow-[0_0_12px_rgba(34,197,94,0.6)]' : 'bg-red-500 shadow-[0_0_12px_rgba(239,68,68,0.6)]'; ?> animate-pulse"></div>
+        <div class="w-2.5 h-2.5 rounded-full <?php echo $is_active ? 'bg-green-500 shadow-[0_0_12px_rgba(34,197,94,0.6)]' : 'bg-red-500 shadow-[0_0_12px_rgba(239,68,68,0.6)]'; ?> animate-pulse"></div>
     </div>
 
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
-            <h3 class="text-xl font-bold text-white flex items-center">
-                <span class="w-10 h-10 bg-indigo-600/20 text-indigo-400 rounded-xl flex items-center justify-center mr-4">
+            <h3 class="text-lg font-black text-white flex items-center">
+                <div class="w-10 h-10 bg-white/5 text-cyan-400 rounded-xl flex items-center justify-center mr-4 border border-white/5">
                     <i class="fas fa-clock"></i>
-                </span>
-                Order Status Cron
+                </div>
+                Order Sync Worker
             </h3>
-            <p class="text-slate-400 text-sm mt-1">
-                Last Run: <span class="text-indigo-400 font-mono"><?php echo $last_run ? date('M d, H:i:s', strtotime($last_run)) : 'Never'; ?></span>
+            <p class="text-slate-400 text-[11px] mt-1 uppercase tracking-tight">
+                Last Heartbeat: <span class="text-cyan-400 font-bold"><?php echo $last_run ? date('M d, H:i:s', strtotime($last_run)) : 'Offline'; ?></span>
             </p>
         </div>
         
-        <div class="flex flex-wrap items-center gap-3">
-            <div class="flex items-center space-x-2 bg-slate-950/50 border border-slate-700/50 rounded-xl px-4 py-2">
-                <code class="text-[10px] text-slate-400 font-mono"><?php echo (FULL_URL ?? '') . '/cron/status'; ?></code>
-                <button onclick="copyToClipboard('<?php echo (FULL_URL ?? '') . '/cron/status'; ?>')" class="text-indigo-400 hover:text-white transition-colors">
+        <div class="flex flex-col md:flex-row items-center gap-3">
+            <div class="flex items-center space-x-3 bg-slate-950/40 border border-white/5 rounded-xl px-4 py-2.5">
+                <code class="text-[10px] text-slate-500 font-mono"><?php echo (FULL_URL ?? '') . '/cron/status'; ?></code>
+                <button onclick="copyToClipboard('<?php echo (FULL_URL ?? '') . '/cron/status'; ?>')" class="text-cyan-400 hover:text-white transition-colors">
                     <i class="fas fa-copy text-xs"></i>
                 </button>
             </div>
-            <a href="<?php echo BASE_URL; ?>/cron/status" target="_blank" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold py-3 px-6 rounded-xl transition-all shadow-lg shadow-indigo-600/20 active:scale-95 flex items-center">
-                <i class="fas fa-sync-alt mr-2"></i> MANUAL SYNC
+            <a href="<?php echo BASE_URL; ?>/cron/status" target="_blank" class="btn-primary text-white text-[10px] font-black py-3 px-6 rounded-xl uppercase tracking-widest shadow-xl shadow-cyan-400/10 active:scale-95">
+                <i class="fas fa-sync-alt mr-2"></i> Trigger Sync
             </a>
         </div>
     </div>
@@ -103,7 +121,7 @@ if (isset($balance_res->error)) {
 <script>
 function copyToClipboard(text) {
     navigator.clipboard.writeText(text).then(() => {
-        alert('Cron URL copied to clipboard!');
+        alert('Cron URL copied successfully!');
     });
 }
 </script>

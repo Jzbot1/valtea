@@ -42,7 +42,7 @@ if (isset($_POST['bulk_adjust'])) {
 
     $stmt = $db->prepare($update_query);
     $stmt->execute($update_params);
-    $message = "Successfully updated " . $stmt->rowCount() . " service prices with $new_percent% profit!";
+    $message = "Successfully updated " . $stmt->rowCount() . " services with $new_percent% profit!";
 }
 
 // Handle Search/Filter
@@ -71,7 +71,6 @@ $services = $stmt->fetchAll();
 
 $categories = $db->query("SELECT * FROM categories ORDER BY name")->fetchAll();
 
-// Calculate Totals
 $total_api = 0;
 $total_sale = 0;
 foreach ($services as $svc) {
@@ -81,134 +80,160 @@ foreach ($services as $svc) {
 $total_profit = $total_sale - $total_api;
 ?>
 
-<div class="flex justify-between items-center mb-6">
-    <h2 class="text-2xl font-bold text-white">Services & Pricing Analysis</h2>
-    <div class="flex space-x-3">
-        <a href="sync.php" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm transition-colors flex items-center">
-            <i class="fas fa-sync mr-2"></i> Sync Services
-        </a>
+<div class="max-w-7xl mx-auto">
+    <div class="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="text-center md:text-left">
+            <h2 class="text-2xl font-black text-white tracking-tight">Service Catalog</h2>
+            <p class="text-slate-400 text-sm mt-1">Pricing analysis and service management</p>
+        </div>
+        <div class="flex gap-2">
+            <a href="sync" class="btn-primary text-white py-2.5 px-6 rounded-xl flex items-center justify-center">
+                <i class="fas fa-sync mr-2 text-[10px]"></i> SYNC ALL
+            </a>
+        </div>
     </div>
-</div>
 
-<?php if (isset($message) && $message): ?>
-    <div class="p-4 rounded-lg mb-6 bg-indigo-500/10 border border-indigo-500/50 text-indigo-400">
-        <i class="fas fa-check-circle mr-2"></i> <?php echo htmlspecialchars($message); ?>
-    </div>
-<?php endif; ?>
+    <?php if ($message): ?>
+        <div class="p-4 rounded-xl mb-6 flex items-start space-x-3 bg-green-500/10 border border-green-500/30 text-green-400 text-sm">
+            <i class="fas fa-check-circle mt-0.5"></i>
+            <div><?php echo htmlspecialchars($message); ?></div>
+        </div>
+    <?php endif; ?>
 
-<!-- Stats Dashboard -->
-<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-    <div class="glass p-5 rounded-2xl border-l-4 border-slate-500">
-        <div class="text-slate-400 text-[10px] font-bold uppercase mb-1">API Cost</div>
-        <div class="text-xl font-bold text-white">₹<?php echo number_format($total_api, 2); ?></div>
+    <!-- Stats Grid -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div class="glass-card p-4 border-l-4 border-slate-500">
+            <p class="text-[9px] text-slate-500 uppercase font-black tracking-widest mb-1">Total API Cost</p>
+            <p class="text-lg font-black text-white">₹<?php echo number_format($total_api, 2); ?></p>
+        </div>
+        <div class="glass-card p-4 border-l-4 border-cyan-400">
+            <p class="text-[9px] text-slate-500 uppercase font-black tracking-widest mb-1">Total Sale Value</p>
+            <p class="text-lg font-black text-white">₹<?php echo number_format($total_sale, 2); ?></p>
+        </div>
+        <div class="glass-card p-4 border-l-4 border-green-500">
+            <p class="text-[9px] text-slate-500 uppercase font-black tracking-widest mb-1">Est. Portfolio Profit</p>
+            <p class="text-lg font-black text-green-400">₹<?php echo number_format($total_profit, 2); ?></p>
+        </div>
+        <div class="glass-card p-4 flex flex-col justify-center">
+            <form method="POST" class="flex gap-2">
+                <input type="number" step="0.1" name="adjustment_percent" placeholder="Profit %" required class="flex-1 !py-2 !text-[11px]">
+                <button type="submit" name="bulk_adjust" onclick="return confirm('Apply this profit percentage to all visible services?')" class="bg-cyan-400 text-white text-[9px] font-black px-3 rounded-lg uppercase">Apply</button>
+            </form>
+        </div>
     </div>
-    <div class="glass p-5 rounded-2xl border-l-4 border-indigo-500">
-        <div class="text-indigo-400 text-[10px] font-bold uppercase mb-1">Sale Value</div>
-        <div class="text-xl font-bold text-white">₹<?php echo number_format($total_sale, 2); ?></div>
-    </div>
-    <div class="glass p-5 rounded-2xl border-l-4 border-green-500">
-        <div class="text-green-400 text-[10px] font-bold uppercase mb-1">Profit</div>
-        <div class="text-xl font-bold text-white">₹<?php echo number_format($total_profit, 2); ?></div>
-    </div>
-    <div class="glass p-5 rounded-2xl border border-dashed border-slate-700 flex flex-col justify-center">
-        <form method="POST" class="flex items-center space-x-2">
-            <input type="number" step="0.1" name="adjustment_percent" placeholder="Profit %" required class="w-20 bg-slate-800 border border-slate-600 rounded px-2 py-1 text-xs text-white focus:outline-none focus:border-indigo-500">
-            <button type="submit" name="bulk_adjust" onclick="return confirm('Apply this profit percentage to all visible services?')" class="bg-indigo-600 hover:bg-indigo-700 text-white text-[10px] font-bold px-2 py-1.5 rounded uppercase transition-colors">
-                Apply %
-            </button>
+
+    <!-- Filters -->
+    <div class="glass-card p-6 mb-8">
+        <form method="GET" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+                <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1.5 px-1">Search</label>
+                <input type="text" name="search" value="<?php echo htmlspecialchars($search); ?>" placeholder="ID or name..." class="w-full !py-2.5">
+            </div>
+            <div>
+                <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1.5 px-1">Category</label>
+                <select name="category_id" class="w-full !py-2.5">
+                    <option value="">All Categories</option>
+                    <?php foreach ($categories as $cat): ?>
+                        <option value="<?php echo $cat['id']; ?>" <?php echo $category_filter == $cat['id'] ? 'selected' : ''; ?>>
+                            <?php echo htmlspecialchars($cat['name']); ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <div class="flex items-end">
+                <button type="submit" class="w-full bg-white/5 hover:bg-white/10 text-white py-2.5 rounded-xl text-xs font-bold transition-all uppercase tracking-widest">
+                    <i class="fas fa-filter mr-2"></i> Filter
+                </button>
+            </div>
         </form>
     </div>
-</div>
 
-<div class="glass rounded-2xl p-6 shadow-2xl mb-8">
-    <form method="GET" class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div>
-            <label class="block text-xs font-medium text-slate-400 mb-1 uppercase tracking-wider">Search Services</label>
-            <input type="text" name="search" value="<?php echo htmlspecialchars($search); ?>" placeholder="Name or ID..." class="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-indigo-500">
+    <!-- Main Table -->
+    <div class="glass-card overflow-hidden shadow-2xl">
+        <!-- Desktop Table -->
+        <div class="hidden md:block overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="border-b border-white/5 bg-white/5">
+                        <th class="px-4 py-3 text-[10px] font-black text-slate-500 uppercase tracking-widest">ID</th>
+                        <th class="px-4 py-3 text-[10px] font-black text-slate-500 uppercase tracking-widest">Service Name</th>
+                        <th class="px-4 py-3 text-[10px] font-black text-slate-500 uppercase tracking-widest">API Rate</th>
+                        <th class="px-4 py-3 text-[10px] font-black text-slate-500 uppercase tracking-widest">Sale Price</th>
+                        <th class="px-4 py-3 text-[10px] font-black text-slate-500 uppercase tracking-widest">Profit</th>
+                        <th class="px-4 py-3 text-[10px] font-black text-slate-500 uppercase tracking-widest">Status</th>
+                        <th class="px-4 py-3 text-[10px] font-black text-slate-500 uppercase tracking-widest text-right">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-white/5">
+                    <?php foreach ($services as $svc): 
+                        $profit = $svc['selling_price'] - $svc['api_rate'];
+                        $profit_percent = ($svc['api_rate'] > 0) ? ($profit / $svc['api_rate']) * 100 : 0;
+                    ?>
+                        <tr class="hover:bg-white/5 transition-colors group">
+                            <td class="px-4 py-4 text-xs font-bold text-slate-500">#<?php echo $svc['id']; ?></td>
+                            <td class="px-4 py-4">
+                                <div class="text-xs font-bold text-white mb-1 truncate max-w-[250px] group-hover:text-cyan-400 transition-colors"><?php echo htmlspecialchars($svc['name']); ?></div>
+                                <div class="text-[9px] text-slate-500 uppercase tracking-widest">Category: <?php echo htmlspecialchars($svc['category_name']); ?></div>
+                            </td>
+                            <td class="px-4 py-4 text-xs text-slate-400 font-mono">₹<?php echo number_format($svc['api_rate'], 4); ?></td>
+                            <td class="px-4 py-4 text-xs text-cyan-400 font-black font-mono">₹<?php echo number_format($svc['selling_price'], 4); ?></td>
+                            <td class="px-4 py-4">
+                                <div class="text-xs text-green-400 font-black">₹<?php echo number_format($profit, 4); ?></div>
+                                <div class="text-[9px] text-green-500/50 font-bold">+<?php echo number_format($profit_percent, 1); ?>%</div>
+                            </td>
+                            <td class="px-4 py-4">
+                                <a href="?toggle_status=1&id=<?php echo $svc['id']; ?>" class="px-2 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest border <?php echo $svc['status'] === 'active' ? 'bg-green-500/10 text-green-400 border-green-500/20' : 'bg-red-500/10 text-red-400 border-red-500/20'; ?>">
+                                    <?php echo $svc['status']; ?>
+                                </a>
+                            </td>
+                            <td class="px-4 py-4 text-right">
+                                <div class="flex items-center justify-end space-x-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <a href="?delete=1&id=<?php echo $svc['id']; ?>" onclick="return confirm('Delete?')" class="text-slate-500 hover:text-red-400 transition-colors"><i class="fas fa-trash-alt text-xs"></i></a>
+                                </div>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
         </div>
-        <div>
-            <label class="block text-xs font-medium text-slate-400 mb-1 uppercase tracking-wider">Filter Category</label>
-            <select name="category_id" class="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-indigo-500">
-                <option value="">All Categories</option>
-                <?php foreach ($categories as $cat): ?>
-                    <option value="<?php echo $cat['id']; ?>" <?php echo $category_filter == $cat['id'] ? 'selected' : ''; ?>>
-                        <?php echo htmlspecialchars($cat['name']); ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
-        </div>
-        <div class="flex items-end">
-            <button type="submit" class="w-full bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-lg transition-colors font-medium">
-                <i class="fas fa-filter mr-2"></i> Apply Filters
-            </button>
-        </div>
-    </form>
-</div>
 
-<div class="glass rounded-2xl overflow-hidden shadow-2xl">
-    <div class="overflow-x-auto">
-        <table class="w-full text-left border-collapse">
-            <thead>
-                <tr class="text-slate-400 text-[10px] border-b border-slate-700/50 uppercase tracking-widest">
-                    <th class="p-4 font-bold">ID</th>
-                    <th class="p-4 font-bold">Service Details</th>
-                    <th class="p-4 font-bold">Category</th>
-                    <th class="p-4 font-bold">API Rate (Base)</th>
-                    <th class="p-4 font-bold">Sale Price</th>
-                    <th class="p-4 font-bold">Profit</th>
-                    <th class="p-4 font-bold">Status</th>
-                    <th class="p-4 font-bold">Actions</th>
-                </tr>
-            </thead>
-            <tbody class="text-sm">
-                <?php foreach ($services as $svc): 
-                    $profit = $svc['selling_price'] - $svc['api_rate'];
-                    $profit_percent = ($svc['api_rate'] > 0) ? ($profit / $svc['api_rate']) * 100 : 0;
-                ?>
-                    <tr class="border-b border-slate-700/30 hover:bg-slate-800/30 transition-colors group">
-                        <td class="p-4 text-slate-500 font-mono text-xs">#<?php echo $svc['id']; ?></td>
-                        <td class="p-4">
-                            <div class="text-white font-medium group-hover:text-indigo-400 transition-colors"><?php echo htmlspecialchars($svc['name']); ?></div>
-                            <div class="text-[10px] text-slate-500 mt-1">API ID: <?php echo $svc['api_service_id']; ?> | <?php echo $svc['min']; ?> - <?php echo $svc['max']; ?></div>
-                        </td>
-                        <td class="p-4">
-                            <span class="text-xs bg-slate-800 text-slate-300 px-2 py-1 rounded border border-slate-700">
-                                <?php echo htmlspecialchars($svc['category_name']); ?>
-                            </span>
-                        </td>
-                        <td class="p-4 text-slate-400 font-mono">₹<?php echo number_format($svc['api_rate'], 4); ?></td>
-                        <td class="p-4 text-indigo-400 font-bold font-mono">₹<?php echo number_format($svc['selling_price'], 4); ?></td>
-                        <td class="p-4">
-                            <div class="text-green-400 font-bold font-mono">₹<?php echo number_format($profit, 4); ?></div>
-                            <div class="text-[9px] text-green-500/70 font-bold">+<?php echo number_format($profit_percent, 1); ?>%</div>
-                        </td>
-                        <td class="p-4">
-                            <a href="?toggle_status=1&id=<?php echo $svc['id']; ?>" class="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-tighter <?php echo $svc['status'] === 'active' ? 'bg-green-500/10 text-green-400 border border-green-500/30' : 'bg-red-500/10 text-red-400 border border-red-500/30'; ?>">
-                                <?php echo $svc['status']; ?>
-                            </a>
-                        </td>
-                        <td class="p-4">
-                            <div class="flex space-x-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <a href="?toggle_status=1&id=<?php echo $svc['id']; ?>" title="Toggle Visibility" class="text-slate-500 hover:text-white">
-                                    <i class="fas <?php echo $svc['status'] === 'active' ? 'fa-eye-slash' : 'fa-eye'; ?>"></i>
-                                </a>
-                                <a href="?delete=1&id=<?php echo $svc['id']; ?>" onclick="return confirm('Delete this service?')" title="Delete" class="text-slate-500 hover:text-red-400">
-                                    <i class="fas fa-trash"></i>
-                                </a>
+        <!-- Mobile View -->
+        <div class="md:hidden divide-y divide-white/5">
+            <?php foreach ($services as $svc): 
+                $profit = $svc['selling_price'] - $svc['api_rate'];
+                $profit_percent = ($svc['api_rate'] > 0) ? ($profit / $svc['api_rate']) * 100 : 0;
+            ?>
+                <div class="p-4 space-y-3">
+                    <div class="flex justify-between items-start">
+                        <span class="text-[10px] font-bold text-slate-500">#<?php echo $svc['id']; ?></span>
+                        <a href="?toggle_status=1&id=<?php echo $svc['id']; ?>" class="px-2 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest border <?php echo $svc['status'] === 'active' ? 'bg-green-500/10 text-green-400 border-green-500/20' : 'bg-red-500/10 text-red-400 border-red-500/20'; ?>">
+                            <?php echo $svc['status']; ?>
+                        </a>
+                    </div>
+                    <div>
+                        <h4 class="text-white font-bold text-sm line-clamp-2"><?php echo htmlspecialchars($svc['name']); ?></h4>
+                        <div class="text-[9px] text-slate-500 uppercase tracking-widest mt-1"><?php echo htmlspecialchars($svc['category_name']); ?></div>
+                    </div>
+                    <div class="flex justify-between items-center pt-3 border-t border-white/5">
+                        <div class="flex gap-4">
+                            <div>
+                                <p class="text-[8px] text-slate-500 uppercase font-black">API</p>
+                                <p class="text-[10px] font-bold text-slate-400">₹<?php echo number_format($svc['api_rate'], 4); ?></p>
                             </div>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-                <?php if (empty($services)): ?>
-                    <tr>
-                        <td colspan="8" class="p-12 text-center text-slate-500 italic bg-slate-900/20">
-                            <i class="fas fa-search mb-3 text-2xl block"></i>
-                            No services found matching your criteria.
-                        </td>
-                    </tr>
-                <?php endif; ?>
-            </tbody>
-        </table>
+                            <div>
+                                <p class="text-[8px] text-slate-500 uppercase font-black">Sale</p>
+                                <p class="text-[10px] font-black text-cyan-400">₹<?php echo number_format($svc['selling_price'], 4); ?></p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-[8px] text-slate-500 uppercase font-black">Profit</p>
+                            <p class="text-xs font-black text-green-400">+₹<?php echo number_format($profit, 4); ?></p>
+                            <p class="text-[8px] text-green-500/70 font-bold"><?php echo number_format($profit_percent, 1); ?>%</p>
+                        </div>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        </div>
     </div>
 </div>
 
