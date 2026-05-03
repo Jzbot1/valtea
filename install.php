@@ -66,27 +66,131 @@ class Database {
             } else {
                 // Import tables one by one for better compatibility
                 $sql_file = __DIR__ . '/init.sql';
-                if (!file_exists($sql_file)) {
-                    $error = "init.sql file not found at $sql_file. Please make sure you have uploaded it to your server.";
-                } else {
+                $sql = '';
+                if (file_exists($sql_file)) {
                     $sql = file_get_contents($sql_file);
-                    if ($sql) {
-                        $statements = array_filter(array_map('trim', explode(';', $sql)));
-                        foreach ($statements as $stmt_sql) {
-                            try {
-                                $pdo->exec($stmt_sql);
-                            } catch (PDOException $e) {
-                                // If it's a "Table already exists" error (1050), we can ignore it
-                                if ($e->getCode() !== '42S01') {
-                                    throw $e;
-                                }
+                } else {
+                    // Fallback: Use embedded SQL if file is missing
+                    $sql = "
+CREATE TABLE IF NOT EXISTS `users` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `name` VARCHAR(100) NOT NULL,
+  `email` VARCHAR(100) NOT NULL UNIQUE,
+  `password` VARCHAR(255) NOT NULL,
+  `balance` DECIMAL(10,2) DEFAULT 0.00,
+  `api_key` VARCHAR(100) NULL UNIQUE,
+  `role` ENUM('user', 'admin') DEFAULT 'user',
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS `categories` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `name` VARCHAR(255) NOT NULL,
+  `sort_order` INT DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS `services` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `api_service_id` INT NOT NULL,
+  `category_id` INT NOT NULL,
+  `name` VARCHAR(255) NOT NULL,
+  `type` VARCHAR(50) NOT NULL,
+  `api_rate` DECIMAL(10,4) NOT NULL,
+  `selling_price` DECIMAL(10,4) NOT NULL,
+  `min` INT NOT NULL,
+  `max` INT NOT NULL,
+  `description` TEXT,
+  `status` ENUM('active', 'inactive') DEFAULT 'active',
+  FOREIGN KEY (`category_id`) REFERENCES `categories`(`id`)
+);
+
+CREATE TABLE IF NOT EXISTS `orders` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `user_id` INT NOT NULL,
+  `service_id` INT NOT NULL,
+  `api_order_id` INT NULL,
+  `link` VARCHAR(1000) NOT NULL,
+  `quantity` INT NOT NULL,
+  `charge` DECIMAL(10,4) NOT NULL,
+  `api_charge` DECIMAL(10,4) NOT NULL,
+  `status` VARCHAR(50) DEFAULT 'Pending',
+  `remains` INT DEFAULT 0,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (`user_id`) REFERENCES `users`(`id`),
+  FOREIGN KEY (`service_id`) REFERENCES `services`(`id`)
+);
+
+CREATE TABLE IF NOT EXISTS `transactions` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `user_id` INT NOT NULL,
+  `amount` DECIMAL(10,2) NOT NULL,
+  `type` ENUM('credit', 'debit') NOT NULL,
+  `description` VARCHAR(255),
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (`user_id`) REFERENCES `users`(`id`)
+);
+
+CREATE TABLE IF NOT EXISTS `settings` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `setting_key` VARCHAR(100) NOT NULL UNIQUE,
+  `setting_value` TEXT
+);
+
+CREATE TABLE IF NOT EXISTS `notifications` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `title` VARCHAR(255) NOT NULL,
+  `message` TEXT NOT NULL,
+  `status` ENUM('active', 'inactive') DEFAULT 'active',
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS `tickets` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `user_id` INT NOT NULL,
+  `subject` VARCHAR(255) NOT NULL,
+  `message` TEXT NOT NULL,
+  `status` ENUM('Open', 'Pending', 'Closed') DEFAULT 'Open',
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (`user_id`) REFERENCES `users`(`id`)
+);
+
+CREATE TABLE IF NOT EXISTS `ticket_replies` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `ticket_id` INT NOT NULL,
+  `user_id` INT NOT NULL,
+  `message` TEXT NOT NULL,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (`ticket_id`) REFERENCES `tickets`(`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`user_id`) REFERENCES `users`(`id`)
+);
+
+INSERT IGNORE INTO `settings` (`setting_key`, `setting_value`) VALUES
+('profit_percent', '5'),
+('smm_api_url', 'https://justanotherpanel.com/api/v2'),
+('smm_api_key', 'YOUR_SMM_API_KEY'),
+('maintenance_mode', '0'),
+('announcement_text', 'Welcome to our premium SMM panel!'),
+('announcement_enabled', '1');
+";
+                }
+
+                if ($sql) {
+                    $statements = array_filter(array_map('trim', explode(';', $sql)));
+                    foreach ($statements as $stmt_sql) {
+                        if (empty($stmt_sql)) continue;
+                        try {
+                            $pdo->exec($stmt_sql);
+                        } catch (PDOException $e) {
+                            if ($e->getCode() !== '42S01') {
+                                throw $e;
                             }
                         }
-                        header("Location: install?step=2");
-                        exit;
-                    } else {
-                        $error = "init.sql file is empty or could not be read.";
                     }
+                    header("Location: install?step=2");
+                    exit;
+                } else {
+                    $error = "Could not load database schema.";
                 }
             }
         } catch (PDOException $e) {
