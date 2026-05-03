@@ -24,6 +24,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt = $db->prepare("UPDATE users SET role = ? WHERE id = ?");
         $stmt->execute([$role, $user_id]);
         $message = "Role updated!";
+    } elseif (isset($_POST['login_as'])) {
+        $user_id = $_POST['user_id'];
+        $stmt = $db->prepare("SELECT * FROM users WHERE id = ?");
+        $stmt->execute([$user_id]);
+        $user = $stmt->fetch();
+        
+        if ($user) {
+            // Save admin ID to session so we can return (optional, but good for UX)
+            $_SESSION['admin_user_id'] = $_SESSION['user_id'];
+            
+            $_SESSION['user_id'] = $user['id'];
+            $_SESSION['role'] = $user['role'];
+            header("Location: ../index.php");
+            exit;
+        }
     }
 }
 
@@ -79,12 +94,21 @@ $users = $stmt->fetchAll();
                                 </form>
                             </td>
                             <td class="px-6 py-4 text-right">
-                                <form method="POST" action="" class="flex items-center justify-end space-x-2">
-                                    <input type="hidden" name="add_balance" value="1">
-                                    <input type="hidden" name="user_id" value="<?php echo $u['id']; ?>">
-                                    <input type="number" step="0.01" name="amount" placeholder="Amt" required class="w-20 !py-1 !px-2 !text-[10px] !rounded-lg">
-                                    <button type="submit" class="bg-cyan-400/10 hover:bg-cyan-400 text-cyan-400 hover:text-white border border-cyan-400/20 px-3 py-1 rounded-lg text-[10px] font-black uppercase transition-all">Add</button>
-                                </form>
+                                <div class="flex items-center justify-end space-x-3">
+                                    <form method="POST" action="" class="flex items-center space-x-2">
+                                        <input type="hidden" name="add_balance" value="1">
+                                        <input type="hidden" name="user_id" value="<?php echo $u['id']; ?>">
+                                        <input type="number" step="0.01" name="amount" placeholder="Amt" required class="w-16 !py-1 !px-2 !text-[10px] !rounded-lg">
+                                        <button type="submit" class="bg-cyan-400/10 hover:bg-cyan-400 text-cyan-400 hover:text-white border border-cyan-400/20 px-2 py-1 rounded-lg text-[9px] font-black uppercase transition-all">Add</button>
+                                    </form>
+                                    <form method="POST" action="" class="inline">
+                                        <input type="hidden" name="login_as" value="1">
+                                        <input type="hidden" name="user_id" value="<?php echo $u['id']; ?>">
+                                        <button type="submit" title="Login as User" class="text-slate-500 hover:text-white transition-colors">
+                                            <i class="fas fa-sign-in-alt text-xs"></i>
+                                        </button>
+                                    </form>
+                                </div>
                             </td>
                         </tr>
                     <?php endforeach; ?>
@@ -97,10 +121,19 @@ $users = $stmt->fetchAll();
             <?php foreach ($users as $u): ?>
                 <div class="p-4 space-y-4">
                     <div class="flex justify-between items-start">
-                        <div>
-                            <span class="text-[10px] font-bold text-slate-500">#<?php echo $u['id']; ?></span>
-                            <h4 class="text-white font-bold text-sm"><?php echo htmlspecialchars($u['name']); ?></h4>
-                            <p class="text-[10px] text-slate-500"><?php echo htmlspecialchars($u['email']); ?></p>
+                        <div class="flex gap-3">
+                            <form method="POST" action="" class="mt-1">
+                                <input type="hidden" name="login_as" value="1">
+                                <input type="hidden" name="user_id" value="<?php echo $u['id']; ?>">
+                                <button type="submit" class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-slate-400">
+                                    <i class="fas fa-sign-in-alt text-xs"></i>
+                                </button>
+                            </form>
+                            <div>
+                                <span class="text-[10px] font-bold text-slate-500">#<?php echo $u['id']; ?></span>
+                                <h4 class="text-white font-bold text-sm"><?php echo htmlspecialchars($u['name']); ?></h4>
+                                <p class="text-[10px] text-slate-500"><?php echo htmlspecialchars($u['email']); ?></p>
+                            </div>
                         </div>
                         <div class="text-right">
                             <span class="text-[9px] text-slate-500 uppercase font-black block mb-1">Balance</span>
