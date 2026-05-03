@@ -208,7 +208,9 @@ INSERT IGNORE INTO `settings` (`setting_key`, `setting_value`) VALUES
             $api_key = bin2hex(random_bytes(16));
             
             // Clear existing users if any to avoid duplicates on fresh install
+            $db->exec("SET FOREIGN_KEY_CHECKS = 0;");
             $db->exec("DELETE FROM users");
+            $db->exec("SET FOREIGN_KEY_CHECKS = 1;");
             
             $stmt = $db->prepare("INSERT INTO users (name, email, password, api_key, role) VALUES (?, ?, ?, ?, 'admin')");
             if ($stmt->execute([$admin_name, $admin_email, $hashed, $api_key])) {
