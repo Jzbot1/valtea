@@ -221,7 +221,17 @@ $site_url = $protocol . '://' . $host . $base_path;
                     </div>
                     <div>
                         <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5 px-1">Webhook Token (Security)</label>
-                        <input type="text" name="ekupi_webhook_token" value="<?php echo htmlspecialchars($settings['ekupi_webhook_token'] ?? ''); ?>" placeholder="Random string for webhook safety" class="w-full">
+                        <div class="flex gap-2">
+                            <input type="text" id="ekupi_token_input" name="ekupi_webhook_token" value="<?php echo htmlspecialchars($settings['ekupi_webhook_token'] ?? ''); ?>" placeholder="Random string" class="flex-1">
+                            <button type="button" onclick="generateToken()" class="bg-indigo-600/20 hover:bg-indigo-600 text-indigo-400 hover:text-white px-4 rounded-xl text-[10px] font-bold transition-all border border-indigo-600/30">Generate</button>
+                        </div>
+                    </div>
+                    <div class="p-3 bg-indigo-400/5 border border-indigo-400/10 rounded-xl">
+                        <label class="block text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1">Your Webhook URL (Copy this to eKupi Dashboard)</label>
+                        <div class="flex items-center gap-2">
+                            <input type="text" readonly id="ekupi_webhook_url" value="<?php echo $site_url; ?>/ekupi_webhook.php?token=<?php echo htmlspecialchars($settings['ekupi_webhook_token'] ?? ''); ?>" class="bg-transparent !border-0 !p-0 text-[10px] text-indigo-300 font-mono flex-1">
+                            <button type="button" onclick="copyToClipboard('ekupi_webhook_url')" class="text-indigo-400 hover:text-white"><i class="fas fa-copy text-xs"></i></button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -321,6 +331,29 @@ $site_url = $protocol . '://' . $host . $base_path;
 <?php require_once 'includes/footer.php'; ?>
 
 <script>
+    function generateToken() {
+        const token = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+        document.getElementById('ekupi_token_input').value = token;
+        updateWebhookUrl(token);
+    }
+
+    function updateWebhookUrl(token) {
+        const baseUrl = '<?php echo $site_url; ?>';
+        document.getElementById('ekupi_webhook_url').value = baseUrl + '/ekupi_webhook.php?token=' + token;
+    }
+
+    function copyToClipboard(id) {
+        const copyText = document.getElementById(id);
+        copyText.select();
+        copyText.setSelectionRange(0, 99999);
+        navigator.clipboard.writeText(copyText.value);
+        
+        const btn = event.currentTarget;
+        const originalIcon = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-check text-green-400"></i>';
+        setTimeout(() => { btn.innerHTML = originalIcon; }, 2000);
+    }
+
     function setChatId(id) {
         const input = document.getElementsByName('telegram_chat_id')[0];
         if (input) {
