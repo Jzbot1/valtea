@@ -160,7 +160,29 @@ $stmt->execute([$user['id']]);
 $transactions = $stmt->fetchAll();
 ?>
 
-<div class="max-w-5xl mx-auto space-y-10 mb-20">
+<style>
+    .glass-card {
+        background: rgba(15, 23, 42, 0.4) !important;
+        backdrop-filter: blur(24px) !important;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 4px;
+        height: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.02);
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 255, 255, 0.2);
+    }
+</style>
+
+<div class="max-w-5xl mx-auto space-y-10 mb-20 pt-10">
     <!-- Header -->
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
@@ -252,7 +274,7 @@ $transactions = $stmt->fetchAll();
                     </h3>
                 </div>
 
-                <div class="overflow-x-auto -mx-10 px-10">
+                <div class="overflow-x-auto -mx-10 px-10 custom-scrollbar">
                     <table class="w-full text-left">
                         <thead>
                             <tr class="text-slate-500 text-[9px] font-black uppercase tracking-[0.2em] border-b border-white/5">
