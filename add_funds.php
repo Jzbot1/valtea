@@ -9,11 +9,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $method = $_POST['method'] ?? '';
 
     if ($amount >= 1) {
-        if ($method === 'jzstore') {
-            // Redirect to processing script
-            header("Location: " . BASE_URL . "/process_payment.php?amount=" . $amount);
-            exit;
-        }
+        // Redirect to processing script for both jzstore and ekupi
+        header("Location: " . BASE_URL . "/process_payment.php?amount=" . $amount);
+        exit;
     } else {
         $message = "Minimum deposit is ₹1.";
         $messageType = "error";
