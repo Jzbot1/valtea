@@ -26,6 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Update database.php file
             $config_content = "<?php
 // config/database.php
+require_once __DIR__ . '/config.php';
 
 define('DB_HOST', '$db_host');
 define('DB_NAME', '$db_name');
