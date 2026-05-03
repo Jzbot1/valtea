@@ -1,13 +1,20 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 require_once __DIR__ . '/config/database.php';
 require_once __DIR__ . '/includes/Auth.php';
 require_once __DIR__ . '/includes/JzstoreGateway.php';
+require_once __DIR__ . '/includes/EkupiGateway.php';
+
+// Debug logging
+function logPaymentDebug($msg) {
+    file_put_contents(__DIR__ . '/payment_debug.log', date('[Y-m-d H:i:s] ') . $msg . PHP_EOL, FILE_APPEND);
+}
 
 Auth::checkLogin();
 $db = Database::getInstance();
 
-// Ensure schema exists
-require_once __DIR__ . '/includes/EkupiGateway.php';
 EkupiGateway::ensureSchema($db);
 
 // Fetch current user data
@@ -54,8 +61,10 @@ $active_gateway = $settings['active_gateway'] ?? 'jzstore';
 $error = null;
 
 if ($active_gateway === 'jzstore') {
+    logPaymentDebug("Initiating JZStore payment for user " . $user['id'] . " amount " . $amount);
     $gatewaySettings = JzstoreGateway::getSettings($db);
     $response = JzstoreGateway::createOrder($gatewaySettings, $payload);
+    logPaymentDebug("JZStore Response: " . json_encode($response));
     
     if ($response['ok']) {
         $redirect_url = $response['data']['result']['payment_url'] ?? null;
@@ -65,16 +74,18 @@ if ($active_gateway === 'jzstore') {
             header("Location: " . $redirect_url);
             exit;
         } else {
-            $error = "Payment URL not received from JZStore.";
+            $error = "Payment URL not received from JZStore. Raw: " . json_encode($response['data']);
         }
     } else {
         $error = $response['error'] ?? 'JZStore initiation failed.';
     }
 } else {
     // eKupi Gateway
+    logPaymentDebug("Initiating eKupi payment for user " . $user['id'] . " amount " . $amount);
     require_once __DIR__ . '/includes/EkupiGateway.php';
     $gatewaySettings = EkupiGateway::getSettings($db);
     $response = EkupiGateway::createOrder($gatewaySettings, $payload);
+    logPaymentDebug("eKupi Response: " . json_encode($response));
     
     if ($response['ok']) {
         $redirect_url = $response['data']['data']['payment_url'] ?? null;
@@ -84,7 +95,7 @@ if ($active_gateway === 'jzstore') {
             header("Location: " . $redirect_url);
             exit;
         } else {
-            $error = "Payment URL not received from eKupi.";
+            $error = "Payment URL not received from eKupi. Raw: " . json_encode($response['data']);
         }
     } else {
         $error = $response['error'] ?? 'eKupi initiation failed.';
