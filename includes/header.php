@@ -152,6 +152,9 @@ $support_number = $site_settings['support_number'] ?? '';
                                 <i class="fas fa-user-shield text-lg"></i>
                             </a>
                         <?php endif; ?>
+                        <a href="<?php echo BASE_URL; ?>/profile" class="p-2 text-slate-400 hover:text-indigo-400 transition-colors">
+                            <i class="fas fa-user-circle text-lg"></i>
+                        </a>
                         <a href="<?php echo BASE_URL; ?>/logout" class="p-2 text-slate-400 hover:text-red-400 transition-colors">
                             <i class="fas fa-power-off text-lg"></i>
                         </a>

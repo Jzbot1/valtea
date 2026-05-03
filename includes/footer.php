@@ -19,6 +19,10 @@
             <i class="fas fa-wallet text-xl"></i>
             <span class="text-[10px] mt-1 font-medium">Funds</span>
         </a>
+        <a href="<?php echo BASE_URL; ?>/profile" class="flex flex-col items-center p-2 text-slate-400 hover:text-indigo-400 transition-colors">
+            <i class="fas fa-user-circle text-xl"></i>
+            <span class="text-[10px] mt-1 font-medium">Profile</span>
+        </a>
     </nav>
 
     <!-- Footer -->
