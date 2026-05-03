@@ -33,19 +33,19 @@ class JzstoreGateway
             'remark2' => 'uid:' . ($payload['user_id'] ?? '')
         ];
 
-        return self::postForm($url, $data);
+        return self::postJson($url, $data);
     }
 
     public static function checkOrderStatus(array $settings, string $clientTxnId): array
     {
         $url = $settings['base_url'] . '/api/check-order-status';
-        return self::postForm($url, [
+        return self::postJson($url, [
             'user_token' => $settings['token'],
             'order_id' => $clientTxnId
         ]);
     }
 
-    private static function postForm(string $url, array $body): array
+    private static function postJson(string $url, array $body): array
     {
         if (empty($body['user_token'])) {
             return ['ok' => false, 'error' => 'JZStore User Token is not configured.'];
@@ -55,7 +55,11 @@ class JzstoreGateway
         curl_setopt_array($ch, [
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_POST => true,
-            CURLOPT_POSTFIELDS => http_build_query($body),
+            CURLOPT_POSTFIELDS => json_encode($body),
+            CURLOPT_HTTPHEADER => [
+                'Content-Type: application/json',
+                'Accept: application/json'
+            ],
             CURLOPT_CONNECTTIMEOUT => 10,
             CURLOPT_TIMEOUT => 30,
             CURLOPT_SSL_VERIFYPEER => true
