@@ -191,19 +191,37 @@ $site_url = $protocol . '://' . $host . $base_path;
             <!-- JZStore Cash -->
             <div class="glass-card p-6">
                 <h3 class="text-xs font-black text-white uppercase tracking-widest mb-6 flex items-center">
-                    <i class="fas fa-credit-card mr-2 text-cyan-400"></i> Payment Gateway
+                    <i class="fas fa-qrcode mr-2 text-cyan-400"></i> JZStore QR Settings
                 </h3>
                 <div class="space-y-4">
                     <div>
-                        <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5 px-1">JZStore User Token</label>
+                        <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5 px-1">User Token</label>
                         <input type="text" name="jzstore_token" value="<?php echo htmlspecialchars($settings['jzstore_token'] ?? ''); ?>" placeholder="Token from jzstore.in" class="w-full">
                     </div>
                     <div>
                         <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5 px-1">Redirect URL</label>
                         <input type="url" name="jzstore_redirect_url" value="<?php echo htmlspecialchars($settings['jzstore_redirect_url'] ?? $site_url . '/payment_callback.php'); ?>" class="w-full text-xs">
                     </div>
-                    <div class="p-3 bg-cyan-400/5 border border-cyan-400/10 rounded-xl text-[10px] text-slate-400">
-                        <i class="fas fa-info-circle mr-1"></i> Ensure the Redirect URL matches your gateway configuration.
+                </div>
+            </div>
+
+            <!-- eKupi Settings -->
+            <div class="glass-card p-6">
+                <h3 class="text-xs font-black text-white uppercase tracking-widest mb-6 flex items-center">
+                    <i class="fas fa-wallet mr-2 text-indigo-400"></i> eKupi Settings
+                </h3>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5 px-1">API Key</label>
+                        <input type="text" name="ekupi_key" value="<?php echo htmlspecialchars($settings['ekupi_key'] ?? ''); ?>" placeholder="GMC-..." class="w-full">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5 px-1">Callback URL</label>
+                        <input type="url" name="ekupi_redirect_url" value="<?php echo htmlspecialchars($settings['ekupi_redirect_url'] ?? $site_url . '/payment_callback.php'); ?>" class="w-full text-xs">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5 px-1">Webhook Token (Security)</label>
+                        <input type="text" name="ekupi_webhook_token" value="<?php echo htmlspecialchars($settings['ekupi_webhook_token'] ?? ''); ?>" placeholder="Random string for webhook safety" class="w-full">
                     </div>
                 </div>
             </div>
