@@ -9,8 +9,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $method = $_POST['method'] ?? '';
 
     if ($amount >= 1) {
+        $mobile = $_POST['mobile'] ?? '';
         // Redirect to processing script for both jzstore and ekupi
-        header("Location: " . BASE_URL . "/process_payment.php?amount=" . $amount);
+        header("Location: " . BASE_URL . "/process_payment.php?amount=" . $amount . "&mobile=" . urlencode($mobile));
         exit;
     } else {
         $message = "Minimum deposit is ₹1.";
@@ -76,6 +77,10 @@ $transactions = $stmt->fetchAll();
                     <div>
                         <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5 px-1">Amount (₹)</label>
                         <input type="number" name="amount" min="1" step="0.01" required class="w-full" placeholder="Min. ₹1">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5 px-1">Mobile Number</label>
+                        <input type="text" name="mobile" required class="w-full" placeholder="Enter 10-digit mobile">
                     </div>
                     <button type="submit" class="w-full btn-primary text-white py-3.5 rounded-xl mt-2 font-black uppercase tracking-widest">
                         Pay Now <i class="fas fa-chevron-right ml-2 text-[8px]"></i>

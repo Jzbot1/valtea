@@ -40,6 +40,7 @@ if (!isset($_GET['amount']) || (float)$_GET['amount'] < 1) {
 }
 
 $amount = (float)$_GET['amount'];
+$mobile = $_GET['mobile'] ?? '9876543210';
 $clientTxnId = 'TXN' . time() . rand(100, 999);
 
 // Get Settings
@@ -47,7 +48,7 @@ $gatewaySettings = JzstoreGateway::getSettings($db);
 
 // Prepare Payload
 $payload = [
-    'customer_mobile' => $user['mobile'] ?? '9876543210',
+    'customer_mobile' => $mobile,
     'customer_name' => $user['name'] ?? 'Customer',
     'customer_email' => $user['email'] ?? 'customer@example.com',
     'amount' => $amount,
