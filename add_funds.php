@@ -18,6 +18,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $message = "Minimum deposit is ₹1.";
         $messageType = "error";
     }
+}
+
 if (isset($_GET['status'])) {
     if ($_GET['status'] === 'success') {
         $message = "Payment successful! Your balance has been updated.";
