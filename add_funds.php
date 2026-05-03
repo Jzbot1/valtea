@@ -18,6 +18,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $message = "Minimum deposit is ₹1.";
         $messageType = "error";
     }
+if (isset($_GET['status'])) {
+    if ($_GET['status'] === 'success') {
+        $message = "Payment successful! Your balance has been updated.";
+        $messageType = "success";
+    } elseif ($_GET['status'] === 'failed') {
+        $message = "Payment failed or was cancelled.";
+        $messageType = "error";
+    }
+}
+
+if (isset($_GET['error'])) {
+    $message = htmlspecialchars($_GET['error']);
+    $messageType = "error";
 }
 
 $stmt = $db->prepare("SELECT * FROM transactions WHERE user_id = ? ORDER BY id DESC LIMIT 10");

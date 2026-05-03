@@ -1,6 +1,20 @@
 <?php
-require_once 'includes/header.php';
-require_once 'includes/JzstoreGateway.php';
+require_once __DIR__ . '/config/database.php';
+require_once __DIR__ . '/includes/Auth.php';
+require_once __DIR__ . '/includes/JzstoreGateway.php';
+
+Auth::checkLogin();
+$db = Database::getInstance();
+
+// Fetch current user data
+$stmt = $db->prepare("SELECT * FROM users WHERE id = ?");
+$stmt->execute([$_SESSION['user_id']]);
+$user = $stmt->fetch();
+
+if (!$user) {
+    header("Location: login.php");
+    exit;
+}
 
 if (!isset($_GET['amount']) || (float)$_GET['amount'] < 1) {
     header("Location: add_funds.php");
@@ -15,7 +29,7 @@ $gatewaySettings = JzstoreGateway::getSettings($db);
 
 // Prepare Payload
 $payload = [
-    'customer_mobile' => $user['mobile'] ?? '9876543210', // Default if not set
+    'customer_mobile' => $user['mobile'] ?? '9876543210',
     'amount' => $amount,
     'client_txn_id' => $clientTxnId,
     'redirect_url' => $gatewaySettings['redirect_url'],
@@ -26,6 +40,7 @@ $payload = [
 // Create Order
 $response = JzstoreGateway::createOrder($gatewaySettings, $payload);
 
+$error = null;
 if ($response['ok']) {
     $redirect_url = $response['data']['result']['payment_url'] ?? null;
     if ($redirect_url) {
@@ -41,6 +56,9 @@ if ($response['ok']) {
 } else {
     $error = $response['error'] ?? 'Failed to initiate payment.';
 }
+
+// Only if there is an error do we continue to show the UI
+require_once 'includes/header.php';
 ?>
 
 <div class="max-w-md mx-auto py-12">
