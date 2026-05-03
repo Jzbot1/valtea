@@ -69,58 +69,54 @@ $stats['Spent'] = $stmt->fetchColumn() ?: 0;
 ?>
 
 <div class="max-w-4xl mx-auto">
-    <div class="mb-8">
-        <h2 class="text-3xl font-black text-white">Account Settings</h2>
-        <p class="text-slate-400 mt-1">Manage your profile, security, and API access.</p>
+    <div class="mb-6 text-center md:text-left">
+        <h2 class="text-2xl font-black text-white tracking-tight">Account Settings</h2>
+        <p class="text-slate-400 text-sm mt-1">Manage your security and API access</p>
     </div>
 
     <?php if ($message): ?>
-        <div class="p-4 rounded-2xl mb-8 flex items-start space-x-3 <?php echo $messageType === 'success' ? 'bg-green-500/10 border-green-500/30 text-green-400' : 'bg-red-500/10 border-red-500/30 text-red-400'; ?> border animate-in fade-in slide-in-from-top-4 duration-300">
+        <div class="p-4 rounded-xl mb-6 flex items-start space-x-3 <?php echo $messageType === 'success' ? 'bg-green-500/10 border-green-500/30 text-green-400' : 'bg-red-500/10 border-red-500/30 text-red-400'; ?> border text-sm">
             <i class="fas <?php echo $messageType === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'; ?> mt-0.5"></i>
-            <div class="text-sm font-medium"><?php echo htmlspecialchars($message); ?></div>
+            <div><?php echo htmlspecialchars($message); ?></div>
         </div>
     <?php endif; ?>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <!-- Left Column: Stats & Info -->
         <div class="lg:col-span-1 space-y-6">
-            <div class="glass-card rounded-3xl p-6 shadow-xl text-center">
-                <div class="w-20 h-20 bg-indigo-600/20 text-indigo-400 rounded-3xl flex items-center justify-center mx-auto mb-4 border border-indigo-500/20">
-                    <i class="fas fa-user-circle text-4xl"></i>
+            <div class="glass-card p-6 text-center">
+                <div class="w-16 h-16 bg-cyan-400/10 text-cyan-400 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-cyan-400/20">
+                    <i class="fas fa-user-circle text-3xl"></i>
                 </div>
-                <h3 class="text-xl font-bold text-white"><?php echo htmlspecialchars($user['name']); ?></h3>
-                <p class="text-slate-400 text-xs mt-1"><?php echo htmlspecialchars($user['email']); ?></p>
-                <div class="mt-6 pt-6 border-t border-slate-700/50">
-                    <p class="text-[10px] text-slate-500 uppercase font-black tracking-widest mb-1">Total Spent</p>
-                    <p class="text-2xl font-black text-white">₹<?php echo number_format($stats['Spent'], 2); ?></p>
+                <h3 class="text-lg font-bold text-white"><?php echo htmlspecialchars($user['name']); ?></h3>
+                <p class="text-slate-500 text-[11px] mt-1"><?php echo htmlspecialchars($user['email']); ?></p>
+                <div class="mt-4 pt-4 border-t border-white/5">
+                    <p class="text-[9px] text-slate-500 uppercase font-black tracking-widest mb-0.5">Total Spent</p>
+                    <p class="text-xl font-black text-white">₹<?php echo number_format($stats['Spent'], 2); ?></p>
                 </div>
             </div>
 
-            <div class="glass-card rounded-3xl p-6 shadow-xl">
-                <h4 class="text-sm font-bold text-white mb-4 flex items-center">
-                    <i class="fas fa-chart-pie mr-2 text-indigo-400"></i> Order Statistics
+            <div class="glass-card p-6">
+                <h4 class="text-xs font-bold text-white mb-4 flex items-center uppercase tracking-widest">
+                    <i class="fas fa-chart-pie mr-2 text-cyan-400"></i> Stats
                 </h4>
                 <div class="space-y-3">
-                    <div class="flex justify-between items-center text-sm">
-                        <span class="text-slate-400">Total Orders</span>
-                        <span class="text-white font-bold"><?php echo $stats['Total']; ?></span>
-                    </div>
-                    <div class="flex justify-between items-center text-sm">
-                        <span class="text-green-400">Completed</span>
-                        <span class="text-white font-bold"><?php echo $stats['Completed']; ?></span>
-                    </div>
-                    <div class="flex justify-between items-center text-sm">
-                        <span class="text-yellow-400">Processing</span>
-                        <span class="text-white font-bold"><?php echo $stats['Processing'] + $stats['In progress']; ?></span>
-                    </div>
-                    <div class="flex justify-between items-center text-sm">
-                        <span class="text-blue-400">Pending</span>
-                        <span class="text-white font-bold"><?php echo $stats['Pending']; ?></span>
-                    </div>
-                    <div class="flex justify-between items-center text-sm">
-                        <span class="text-red-400">Canceled</span>
-                        <span class="text-white font-bold"><?php echo $stats['Canceled']; ?></span>
-                    </div>
+                    <?php 
+                    $stat_items = [
+                        ['Total', 'Total Orders', 'text-slate-400'],
+                        ['Completed', 'Completed', 'text-green-400'],
+                        ['Processing', 'Processing', 'text-cyan-400'],
+                        ['Pending', 'Pending', 'text-amber-400'],
+                        ['Canceled', 'Canceled', 'text-red-400'],
+                    ];
+                    foreach ($stat_items as $item): 
+                        $val = $item[0] === 'Processing' ? ($stats['Processing'] + $stats['In progress']) : $stats[$item[0]];
+                    ?>
+                        <div class="flex justify-between items-center text-[11px]">
+                            <span class="<?php echo $item[2]; ?> font-medium uppercase tracking-tight"><?php echo $item[1]; ?></span>
+                            <span class="text-white font-black"><?php echo $val; ?></span>
+                        </div>
+                    <?php endforeach; ?>
                 </div>
             </div>
         </div>
@@ -128,50 +124,50 @@ $stats['Spent'] = $stmt->fetchColumn() ?: 0;
         <!-- Right Column: Security & API -->
         <div class="lg:col-span-2 space-y-6">
             <!-- API Settings -->
-            <div class="glass-card rounded-3xl p-8 shadow-xl">
-                <h4 class="text-xl font-bold text-white mb-6 flex items-center">
-                    <i class="fas fa-key mr-3 text-indigo-400"></i> API Access
+            <div class="glass-card p-6">
+                <h4 class="text-lg font-bold text-white mb-4 flex items-center">
+                    <i class="fas fa-key mr-3 text-cyan-400"></i> API Access
                 </h4>
-                <div class="bg-slate-950/50 border border-slate-700/50 rounded-2xl p-4 mb-6">
-                    <label class="block text-[10px] text-slate-500 uppercase font-black tracking-widest mb-2 px-1">Your API Key</label>
+                <div class="bg-slate-950/40 border border-white/5 rounded-xl p-4 mb-4">
+                    <label class="block text-[9px] text-slate-500 uppercase font-black tracking-widest mb-1.5">API Key</label>
                     <div class="flex items-center space-x-3">
-                        <input type="text" id="api_key" readonly value="<?php echo htmlspecialchars($user['api_key']); ?>" class="flex-1 bg-transparent border-none text-indigo-400 font-mono text-sm focus:ring-0">
-                        <button onclick="copyApi()" class="text-slate-400 hover:text-white transition-colors">
-                            <i class="fas fa-copy"></i>
+                        <input type="text" id="api_key" readonly value="<?php echo htmlspecialchars($user['api_key']); ?>" class="flex-1 bg-transparent !border-none text-cyan-400 font-mono text-xs focus:ring-0 !p-0">
+                        <button onclick="copyApi()" class="text-slate-500 hover:text-white transition-colors">
+                            <i class="fas fa-copy text-sm"></i>
                         </button>
                     </div>
                 </div>
                 <form method="POST" onsubmit="return confirm('Regenerating will invalidate your old key. Continue?');">
                     <input type="hidden" name="action" value="regen_api">
-                    <button type="submit" class="text-xs font-bold text-indigo-400 hover:text-indigo-300 flex items-center transition-colors">
+                    <button type="submit" class="text-[10px] font-black text-cyan-400 hover:text-white flex items-center transition-colors uppercase tracking-widest">
                         <i class="fas fa-sync-alt mr-2"></i> REGENERATE KEY
                     </button>
                 </form>
             </div>
 
             <!-- Password Change -->
-            <div class="glass-card rounded-3xl p-8 shadow-xl">
-                <h4 class="text-xl font-bold text-white mb-6 flex items-center">
-                    <i class="fas fa-shield-alt mr-3 text-indigo-400"></i> Change Password
+            <div class="glass-card p-6">
+                <h4 class="text-lg font-bold text-white mb-4 flex items-center">
+                    <i class="fas fa-shield-alt mr-3 text-cyan-400"></i> Security
                 </h4>
                 <form method="POST" class="space-y-4">
                     <input type="hidden" name="action" value="change_password">
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5 px-1">Current Password</label>
+                        <input type="password" name="current_password" required class="w-full">
+                    </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="md:col-span-2">
-                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 px-1">Current Password</label>
-                            <input type="password" name="current_password" required class="w-full bg-slate-900/50 border border-slate-700/50 rounded-2xl px-5 py-3 text-white focus:outline-none focus:border-indigo-500 transition-all">
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5 px-1">New Password</label>
+                            <input type="password" name="new_password" required class="w-full">
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 px-1">New Password</label>
-                            <input type="password" name="new_password" required class="w-full bg-slate-900/50 border border-slate-700/50 rounded-2xl px-5 py-3 text-white focus:outline-none focus:border-indigo-500 transition-all">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 px-1">Confirm New Password</label>
-                            <input type="password" name="confirm_password" required class="w-full bg-slate-900/50 border border-slate-700/50 rounded-2xl px-5 py-3 text-white focus:outline-none focus:border-indigo-500 transition-all">
+                            <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5 px-1">Confirm New</label>
+                            <input type="password" name="confirm_password" required class="w-full">
                         </div>
                     </div>
-                    <button type="submit" class="btn-primary text-white font-bold py-4 px-8 rounded-2xl shadow-xl mt-4">
-                        Update Password
+                    <button type="submit" class="btn-primary text-white py-3 px-8 rounded-xl mt-2">
+                        Update Security
                     </button>
                 </form>
             </div>

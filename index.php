@@ -103,87 +103,81 @@ $stmt = $db->query("SELECT * FROM notifications WHERE status = 'active' ORDER BY
 $announcement = $stmt->fetch();
 ?>
 
-<div class="max-w-2xl mx-auto">
+<div class="max-w-xl mx-auto">
     <!-- Welcome Section -->
-    <div class="mb-8">
-        <h2 class="text-3xl font-black text-white">Hey, <?php echo explode('@', $user['email'])[0]; ?>! 👋</h2>
-        <p class="text-slate-400 mt-1">Ready to boost your social presence?</p>
+    <div class="mb-6 text-center">
+        <h2 class="text-2xl font-black text-white tracking-tight">Create Order</h2>
+        <p class="text-slate-400 text-sm mt-1">Get high quality social services instantly</p>
     </div>
 
-    <div class="glass-card rounded-3xl p-6 md:p-10 shadow-2xl relative overflow-hidden">
+    <div class="glass-card p-6 md:p-8 shadow-2xl relative overflow-hidden">
         <!-- Decorative Gradient -->
-        <div class="absolute -top-24 -right-24 w-48 h-48 bg-indigo-600/20 rounded-full blur-3xl"></div>
-        <div class="absolute -bottom-24 -left-24 w-48 h-48 bg-blue-600/10 rounded-full blur-3xl"></div>
-
-        <h3 class="text-xl font-bold text-white mb-8 flex items-center">
-            <span class="w-8 h-8 bg-indigo-600/20 text-indigo-400 rounded-lg flex items-center justify-center mr-3">
-                <i class="fas fa-magic text-sm"></i>
-            </span>
-            Create New Order
-        </h3>
+        <div class="absolute -top-24 -right-24 w-48 h-48 bg-cyan-500/10 rounded-full blur-3xl"></div>
+        <div class="absolute -bottom-24 -left-24 w-48 h-48 bg-indigo-600/10 rounded-full blur-3xl"></div>
 
         <?php if ($message): ?>
-            <div class="p-4 rounded-2xl mb-8 flex items-start space-x-3 <?php echo $messageType === 'success' ? 'bg-green-500/10 border-green-500/30 text-green-400' : 'bg-red-500/10 border-red-500/30 text-red-400'; ?> border animate-in fade-in slide-in-from-top-4 duration-300">
+            <div class="p-4 rounded-xl mb-6 flex items-start space-x-3 <?php echo $messageType === 'success' ? 'bg-green-500/10 border-green-500/30 text-green-400' : 'bg-red-500/10 border-red-500/30 text-red-400'; ?> border text-sm">
                 <i class="fas <?php echo $messageType === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'; ?> mt-0.5"></i>
-                <div class="text-sm font-medium"><?php echo htmlspecialchars($message); ?></div>
+                <div><?php echo htmlspecialchars($message); ?></div>
             </div>
         <?php endif; ?>
 
-        <form method="POST" action="" class="space-y-6">
-            <div class="group">
-                <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 px-1">Category</label>
+        <form method="POST" action="" class="space-y-4">
+            <div>
+                <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5 px-1">Category</label>
                 <div class="relative">
-                    <select id="category" class="w-full bg-slate-900/50 border border-slate-700/50 rounded-2xl px-5 py-4 text-white appearance-none focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all cursor-pointer">
-                        <option value="">Select a category...</option>
+                    <select id="category" class="w-full bg-slate-900/50 border border-slate-700/50 rounded-xl px-4 py-3 text-white appearance-none focus:outline-none focus:border-cyan-500 transition-all cursor-pointer text-sm">
+                        <option value="">Select Category...</option>
                         <?php foreach ($categories as $cat): ?>
                             <option value="<?php echo $cat['id']; ?>"><?php echo htmlspecialchars($cat['name']); ?></option>
                         <?php endforeach; ?>
                     </select>
-                    <div class="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500">
+                    <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500">
                         <i class="fas fa-chevron-down text-xs"></i>
                     </div>
                 </div>
             </div>
 
-            <div class="group">
-                <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 px-1">Service</label>
+            <div>
+                <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5 px-1">Service</label>
                 <div class="relative">
-                    <select name="service" id="service" required class="w-full bg-slate-900/50 border border-slate-700/50 rounded-2xl px-5 py-4 text-white appearance-none focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all cursor-pointer">
-                        <option value="">Select a service...</option>
+                    <select name="service" id="service" required class="w-full bg-slate-900/50 border border-slate-700/50 rounded-xl px-4 py-3 text-white appearance-none focus:outline-none focus:border-cyan-500 transition-all cursor-pointer text-sm">
+                        <option value="">Select Service...</option>
                     </select>
-                    <div class="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500">
+                    <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500">
                         <i class="fas fa-chevron-down text-xs"></i>
                     </div>
                 </div>
             </div>
 
-            <div id="service_desc" class="hidden p-5 rounded-2xl bg-indigo-500/5 border border-indigo-500/20 text-indigo-200/80 text-xs leading-relaxed italic">
+            <div id="service_desc" class="hidden p-4 rounded-xl bg-cyan-500/5 border border-cyan-500/20 text-cyan-200/80 text-[11px] leading-relaxed italic">
             </div>
 
-            <div class="group">
-                <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 px-1">Link / URL</label>
-                <input type="text" name="link" required class="w-full bg-slate-900/50 border border-slate-700/50 rounded-2xl px-5 py-4 text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all" placeholder="Enter social profile or post link">
+            <div>
+                <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5 px-1">Link / URL</label>
+                <input type="text" name="link" required class="w-full bg-slate-900/50 border border-slate-700/50 rounded-xl px-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:border-cyan-500 transition-all text-sm" placeholder="Paste link here">
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="group">
-                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 px-1">Quantity</label>
-                    <input type="number" name="quantity" id="quantity" required class="w-full bg-slate-900/50 border border-slate-700/50 rounded-2xl px-5 py-4 text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all" placeholder="e.g. 1000">
-                    <p id="min_max_info" class="text-[10px] text-slate-500 mt-2 px-1 font-medium"></p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5 px-1">Quantity</label>
+                    <input type="number" name="quantity" id="quantity" required class="w-full bg-slate-900/50 border border-slate-700/50 rounded-xl px-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:border-cyan-500 transition-all text-sm" placeholder="Enter amount">
+                    <p id="min_max_info" class="text-[9px] text-slate-500 mt-1.5 px-1 font-medium"></p>
                 </div>
 
-                <div class="bg-indigo-500/10 border border-indigo-500/20 rounded-2xl p-4 flex flex-col justify-center items-center">
-                    <span class="text-[10px] text-indigo-300 uppercase font-bold tracking-widest mb-1">Total Charge</span>
-                    <span id="charge" class="text-2xl font-black text-white">₹0.00</span>
+                <div class="bg-cyan-500/10 border border-cyan-500/20 rounded-xl p-3 flex flex-col justify-center items-center">
+                    <span class="text-[9px] text-cyan-300 uppercase font-bold tracking-widest mb-0.5">Charge</span>
+                    <span id="charge" class="text-xl font-black text-white">₹0.00</span>
                 </div>
             </div>
 
-            <button type="submit" class="w-full btn-primary text-white font-bold py-5 rounded-2xl shadow-xl active:scale-[0.98] mt-4 flex items-center justify-center space-x-2">
-                <span>Confirm Order</span>
-                <i class="fas fa-arrow-right text-xs"></i>
+            <button type="submit" class="w-full btn-primary text-white py-4 rounded-xl shadow-lg active:scale-[0.98] mt-2 flex items-center justify-center space-x-2">
+                <span>Place Order</span>
+                <i class="fas fa-rocket text-xs"></i>
             </button>
         </form>
     </div>
+</div>
 
     <!-- Admin Announcement Section -->
     <?php if ($announcement): ?>

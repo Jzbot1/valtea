@@ -61,52 +61,73 @@ $support_number = $site_settings['support_number'] ?? '';
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
-            --primary: #6366f1;
-            --primary-hover: #4f46e5;
-            --bg-dark: #0f172a;
-            --glass-bg: rgba(30, 41, 59, 0.7);
-            --glass-border: rgba(255, 255, 255, 0.08);
+            --primary-gradient: linear-gradient(153deg, #30cfd0, #330867, hsl(265.2, 76.97859115099217%, 46.58144864334903%));
+            --bg-dark: #070b14;
+            --glass-bg: rgba(15, 23, 42, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.05);
+            --accent: #30cfd0;
         }
         body { 
             font-family: 'Inter', sans-serif; 
             background-color: var(--bg-dark); 
-            color: #f8fafc;
-            background-image: radial-gradient(circle at 50% -20%, #1e1b4b 0%, #0f172a 100%);
+            color: #f1f5f9;
+            background-image: var(--primary-gradient);
             background-attachment: fixed;
+            background-size: cover;
+            min-height: 100vh;
         }
         .glass { 
             background: var(--glass-bg); 
-            backdrop-filter: blur(12px); 
-            -webkit-backdrop-filter: blur(12px);
+            backdrop-filter: blur(16px); 
+            -webkit-backdrop-filter: blur(16px);
             border: 1px solid var(--glass-border); 
         }
         .glass-card {
-            background: rgba(15, 23, 42, 0.6);
-            backdrop-filter: blur(8px);
-            border: 1px solid var(--glass-border);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: rgba(7, 11, 20, 0.4);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 1.25rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .glass-card:hover {
-            border-color: rgba(99, 102, 241, 0.3);
-            transform: translateY(-2px);
+            border-color: var(--accent);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px -20px rgba(48, 207, 208, 0.3);
         }
         .btn-primary {
-            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            background: linear-gradient(135deg, #30cfd0 0%, #330867 100%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             transition: all 0.3s ease;
+            font-size: 0.875rem;
+            font-weight: 600;
         }
         .btn-primary:hover {
-            box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.4);
-            transform: translateY(-1px);
+            box-shadow: 0 0 20px rgba(48, 207, 208, 0.4);
+            transform: scale(1.02);
         }
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #0f172a; }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #475569; }
-        
         .nav-link-active {
-            color: white !important;
-            background: rgba(99, 102, 241, 0.15) !important;
-            border: 1px solid rgba(99, 102, 241, 0.2) !important;
+            color: var(--accent) !important;
+            background: rgba(48, 207, 208, 0.1) !important;
+            border: 1px solid rgba(48, 207, 208, 0.2) !important;
+        }
+        /* Mobile optimization */
+        @media (max-width: 768px) {
+            .glass-card { padding: 1.25rem !important; }
+            h2 { font-size: 1.5rem !important; }
+            .btn-primary { padding: 0.75rem 1rem !important; }
+        }
+        /* Input styling */
+        input, select, textarea {
+            background: rgba(15, 23, 42, 0.4) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            border-radius: 0.75rem !important;
+            font-size: 0.875rem !important;
+            padding: 0.75rem 1rem !important;
+            transition: all 0.2s ease;
+        }
+        input:focus, select:focus {
+            border-color: var(--accent) !important;
+            box-shadow: 0 0 0 4px rgba(48, 207, 208, 0.1) !important;
         }
     </style>
 </head>
