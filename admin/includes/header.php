@@ -99,7 +99,9 @@ $site_favicon = $stmt->fetchColumn() ?: '';
 
     <aside class="w-64 glass border-r border-slate-700/50 flex-shrink-0 hidden md:flex flex-col sticky top-0 h-screen">
         <div class="h-16 flex items-center px-6 border-b border-white/5">
-            <h1 class="text-xl font-black text-cyan-400 tracking-tight uppercase"><?php echo htmlspecialchars($site_name); ?></h1>
+            <a href="<?php echo BASE_URL; ?>/" class="text-xl font-black text-cyan-400 tracking-tight uppercase hover:text-white transition-colors">
+                <?php echo htmlspecialchars($site_name); ?>
+            </a>
         </div>
         <nav class="flex-1 overflow-y-auto py-6 px-4 space-y-1">
             <a href="<?php echo BASE_URL; ?>/admin/index" class="flex items-center px-4 py-3 text-[13px] font-semibold text-slate-300 rounded-xl hover:bg-white/5 hover:text-white transition-all">
