@@ -23,6 +23,13 @@ if (!$user) {
     exit;
 }
 
+// Fetch Settings
+$stmt = $db->query("SELECT setting_key, setting_value FROM settings");
+$settings = [];
+foreach ($stmt->fetchAll() as $row) {
+    $settings[$row['setting_key']] = $row['setting_value'];
+}
+
 if (!isset($_GET['amount']) || (float)$_GET['amount'] < 1) {
     header("Location: add_funds.php");
     exit;
@@ -37,6 +44,8 @@ $gatewaySettings = JzstoreGateway::getSettings($db);
 // Prepare Payload
 $payload = [
     'customer_mobile' => $user['mobile'] ?? '9876543210',
+    'customer_name' => $user['name'] ?? 'Customer',
+    'customer_email' => $user['email'] ?? 'customer@example.com',
     'amount' => $amount,
     'client_txn_id' => $clientTxnId,
     'redirect_url' => $gatewaySettings['redirect_url'],
@@ -44,24 +53,45 @@ $payload = [
     'user_id' => $user['id']
 ];
 
-// Create Order
-$response = JzstoreGateway::createOrder($gatewaySettings, $payload);
-
+$active_gateway = $settings['active_gateway'] ?? 'jzstore';
 $error = null;
-if ($response['ok']) {
-    $redirect_url = $response['data']['result']['payment_url'] ?? null;
-    if ($redirect_url) {
-        // Record initiated transaction in payment_orders
-        $stmt = $db->prepare("INSERT INTO payment_orders (user_id, amount, client_txn_id, p_info, status, redirect_url) VALUES (?, ?, ?, ?, 'created', ?)");
-        $stmt->execute([$user['id'], $amount, $clientTxnId, 'Wallet Top-up via QR', $gatewaySettings['redirect_url']]);
-        
-        header("Location: " . $redirect_url);
-        exit;
+
+if ($active_gateway === 'jzstore') {
+    $gatewaySettings = JzstoreGateway::getSettings($db);
+    $response = JzstoreGateway::createOrder($gatewaySettings, $payload);
+    
+    if ($response['ok']) {
+        $redirect_url = $response['data']['result']['payment_url'] ?? null;
+        if ($redirect_url) {
+            $stmt = $db->prepare("INSERT INTO payment_orders (user_id, amount, client_txn_id, p_info, status, redirect_url) VALUES (?, ?, ?, ?, 'created', ?)");
+            $stmt->execute([$user['id'], $amount, $clientTxnId, 'Wallet Top-up via JZStore', $gatewaySettings['redirect_url']]);
+            header("Location: " . $redirect_url);
+            exit;
+        } else {
+            $error = "Payment URL not received from JZStore.";
+        }
     } else {
-        $error = "Payment URL not received from gateway.";
+        $error = $response['error'] ?? 'JZStore initiation failed.';
     }
 } else {
-    $error = $response['error'] ?? 'Failed to initiate payment.';
+    // eKupi Gateway
+    require_once __DIR__ . '/includes/EkupiGateway.php';
+    $gatewaySettings = EkupiGateway::getSettings($db);
+    $response = EkupiGateway::createOrder($gatewaySettings, $payload);
+    
+    if ($response['ok']) {
+        $redirect_url = $response['data']['data']['payment_url'] ?? null;
+        if ($redirect_url) {
+            $stmt = $db->prepare("INSERT INTO payment_orders (user_id, amount, client_txn_id, p_info, status, redirect_url) VALUES (?, ?, ?, ?, 'created', ?)");
+            $stmt->execute([$user['id'], $amount, $clientTxnId, 'Wallet Top-up via eKupi', $gatewaySettings['redirect_url']]);
+            header("Location: " . $redirect_url);
+            exit;
+        } else {
+            $error = "Payment URL not received from eKupi.";
+        }
+    } else {
+        $error = $response['error'] ?? 'eKupi initiation failed.';
+    }
 }
 
 // Only if there is an error do we continue to show the UI

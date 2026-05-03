@@ -64,7 +64,15 @@ $transactions = $stmt->fetchAll();
                     <div>
                         <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5 px-1">Method</label>
                         <select name="method" required class="w-full">
-                            <option value="jzstore">QR Payment (Instant)</option>
+                            <?php 
+                            $stmt = $db->query("SELECT setting_value FROM settings WHERE setting_key = 'active_gateway'");
+                            $active_gw = $stmt->fetchColumn() ?: 'jzstore';
+                            ?>
+                            <?php if ($active_gw === 'jzstore'): ?>
+                                <option value="jzstore">JZStore QR (Instant)</option>
+                            <?php else: ?>
+                                <option value="ekupi">eKupi (Instant)</option>
+                            <?php endif; ?>
                         </select>
                     </div>
                     <div>
